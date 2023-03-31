@@ -27,19 +27,23 @@ from time import time as now
 # HANDLERS
 
 def on_api_key_change():
-	api_key = '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'
-	# model.use_key(api_key) # TODO: empty api_key
-	#
-	if 'data_dict' not in ss: ss['data_dict'] = {} # used only with DictStorage
-	ss['storage'] = storage.get_storage(api_key, data_dict=ss['data_dict'])
-	ss['cache'] = cache.get_cache()
-	ss['user'] = ss['storage'].folder # TODO: refactor user 'calculation' from get_storage
-	model.set_user(ss['user'])
-	ss['feedback'] = feedback.get_feedback_adapter(ss['user'])
-	ss['feedback_score'] = ss['feedback'].get_score()
-	#
-	ss['debug']['storage.folder'] = ss['storage'].folder
-	ss['debug']['storage.class'] = ss['storage'].__class__.__name__
+    load_dotenv()  # load environment variables from .env file
+    api_key = os.getenv('API_KEY')  # read API key from environment variable
+    if not api_key:
+        raise ValueError('API key is not set in .env file')
+        
+    if 'data_dict' not in ss:
+        ss['data_dict'] = {}  # used only with DictStorage
+        
+    ss['storage'] = storage.get_storage(api_key, data_dict=ss['data_dict'])
+    ss['cache'] = cache.get_cache()
+    ss['user'] = ss['storage'].folder
+    model.set_user(ss['user'])
+    ss['feedback'] = feedback.get_feedback_adapter(ss['user'])
+    ss['feedback_score'] = ss['feedback'].get_score()
+    
+    ss['debug']['storage.folder'] = ss['storage'].folder
+    ss['debug']['storage.class'] = ss['storage'].__class__.__name__
 
 
 ss['community_user'] = os.getenv('COMMUNITY_USER')
